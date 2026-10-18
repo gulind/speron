@@ -2,6 +2,7 @@
 import { useState } from "react";
 import "./App.css";
 import MatchReview from "./MatchReview";
+import Demo from "./Demo";
 const API_URL =
   import.meta.env.VITE_API_URL || "http://localhost:3001";
 
@@ -157,6 +158,17 @@ function App() {
             <div className="action-grid">
               <button
                 className="action-card"
+                onClick={() => setActivePage("demo")}
+              >
+                <span className="card-icon">✦</span>
+                <h3>Try interactive demo</h3>
+                <p>Explore Speron with fictional scenarios.</p>
+                <span className="arrow">↗</span>
+              </button>
+              {!import.meta.env.PROD && (
+                <>
+              <button
+                className="action-card"
                 onClick={openRegistration}
               >
                 <span className="card-icon">＋</span>
@@ -186,6 +198,8 @@ function App() {
                 </p>
                 <span className="arrow">↗</span>
               </button>
+                </>
+              )}
             </div>
 
             <div className="safety-note">
@@ -518,6 +532,9 @@ function App() {
 
         {activePage === "matches" && (
           <MatchReview onBack={goHome} />
+        )}
+        {activePage === "demo" && (
+          <Demo onBack={goHome} />
         )}
 
       </main>

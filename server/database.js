@@ -1,7 +1,12 @@
-
 import { DatabaseSync } from "node:sqlite";
+import { fileURLToPath } from "node:url";
+import path from "node:path";
 
-const db = new DatabaseSync("speron.db");
+const databasePath =
+  process.env.DATABASE_PATH ||
+  path.join(path.dirname(fileURLToPath(import.meta.url)), "speron.db");
+
+const db = new DatabaseSync(databasePath);
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS people (
@@ -75,5 +80,42 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_candidate_status
     ON candidate_matches(status);
 `);
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS demo_scenarios (
+    id TEXT PRIMARY KEY,
+    searched_name TEXT NOT NULL,
+    candidate_name TEXT NOT NULL,
+    matching_allowed INTEGER NOT NULL
+      CHECK (matching_allowed IN (0, 1))
+  );
+`);
+
+const insertDemo = db.prepare(`
+  INSERT OR IGNORE INTO demo_scenarios
+    (id, searched_name, candidate_name, matching_allowed)
+  VALUES (?, ?, ?, ?)
+`);
+
+insertDemo.run(
+  "nickname",
+  "Mike Johnson",
+  "Michael Johnson",
+  1
+);
+
+insertDemo.run(
+  "spelling",
+  "Katherine Morgan",
+  "Catherine Morgan",
+  1
+);
+
+insertDemo.run(
+  "privacy",
+  "Alex Carter",
+  "Alexander Carter",
+  0
+);
 
 export default db;

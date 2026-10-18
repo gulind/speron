@@ -12,11 +12,31 @@ import { compareNames } from "./matching.js";
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:4173",
+  process.env.CLIENT_ORIGIN
+].filter(Boolean);
+
 app.use(cors({
-  origin: process.env.CLIENT_ORIGIN || "http://localhost:5173",
+  origin: allowedOrigins
 }));
 
 app.use(express.json({ limit: "20kb" }));
+
+const isProduction = process.env.NODE_ENV === "production";
+
+// Until an isolated fictional-data demo is ready,
+// do not accept public registrations or search requests.
+app.use(["/api/people", "/api/search-requests"], (req, res, next) => {
+  if (isProduction) {
+    return res.status(403).json({
+      error: "Public submissions are disabled in this demo."
+    });
+  }
+
+  next();
+});
 
 app.get("/api/health", (req, res) => {
   res.json({
@@ -286,6 +306,69 @@ app.patch("/api/staff/matches/:id", (req, res) => {
     });
   }
 });
+
+
+app.post("/api/demo/match", (req, res) => {
+  const { scenario } = req.body || {};
+
+  if (
+    typeof scenario !== "string" ||
+    !["nickname", "spelling", "privacy"].includes(scenario)
+  ) {
+    return res.status(400).json({
+      error: "Select a valid demo scenario."
+    });
+  }
+
+  try {
+    const selected = db.prepare(`
+      SELECT
+        searched_name,
+        candidate_name,
+        matching_allowed
+      FROM demo_scenarios
+      WHERE id = ?
+    `).get(scenario);
+
+    if (!selected) {
+      return res.status(404).json({
+        error: "Demo scenario not found."
+      });
+    }
+
+    if (!selected.matching_allowed) {
+      return res.json({
+        scenario,
+        outcome: "not_eligible",
+        message:
+          "This fictional record is not eligible for matching."
+      });
+    }
+
+    const comparison = compareNames(
+      selected.searched_name,
+      selected.candidate_name
+    );
+
+    res.json({
+      scenario,
+      outcome: comparison.reviewRequired
+        ? "needs_review"
+        : "no_suggestion",
+      searchedName: selected.searched_name,
+      candidateName: selected.candidate_name,
+      score: comparison.score,
+      message:
+        "Fictional demo only. Name similarity is not proof of identity."
+    });
+  } catch (error) {
+    console.error("Demo error:", error);
+    res.status(500).json({
+      error: "Unable to run demo scenario."
+    });
+  }
+});
+
 
 app.listen(PORT, () => {
   console.log(`Speron API running on http://localhost:${PORT}`);
