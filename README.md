@@ -17,8 +17,8 @@ Speron has three main steps: **register a person, search for someone, and review
 ## Screenshots
 
 ![Speron home page](screenshots/home.png)
-![Register a person](screenshots/registration.png)
-![Review possible matches](screenshots/review.png)
+![Register a person](screenshots/sent.png)
+![Review possible matches](screenshots/match.png)
 
 ## What I built and why
 
