@@ -1,0 +1,546 @@
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
+
+:root {
+  font-family: 'DM Sans', sans-serif;
+  color: #253d35;
+  background: #f8faf7;
+  font-synthesis: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+button {
+  font: inherit;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 25px 8%;
+  background: white;
+  border-bottom: 1px solid #e6ebe5;
+}
+
+.logo {
+  font-family: 'Manrope', sans-serif;
+  font-size: 30px;
+  letter-spacing: -1.5px;
+  margin: 0;
+  color: #285b46;
+}
+
+.logo span {
+  color: #91bd95;
+}
+
+.tagline {
+  font-size: 12px;
+  color: #84968b;
+  margin: 3px 0 0;
+}
+
+.portal-badge {
+  background: #eaf4e9;
+  color: #387356;
+  padding: 9px 15px;
+  border-radius: 30px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.main {
+  width: 100%;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 90px 30px;
+  flex: 1;
+}
+
+.eyebrow {
+  color: #70977b;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+h2 {
+  font-family: 'Manrope', sans-serif;
+  font-size: clamp(30px, 4vw, 46px);
+  letter-spacing: -1.8px;
+  margin: 12px 0;
+}
+
+.subtitle {
+  color: #819188;
+  font-size: 16px;
+  margin-bottom: 42px;
+}
+
+.action-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.action-card {
+  position: relative;
+  text-align: left;
+  background: white;
+  border: 1px solid #e3ebe3;
+  border-radius: 18px;
+  padding: 30px;
+  min-height: 240px;
+  cursor: pointer;
+  transition: 0.2s ease;
+  color: inherit;
+}
+
+.action-card:hover {
+  border-color: #8eb79a;
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px #294b3510;
+}
+
+.card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: #eaf4e9;
+  border-radius: 14px;
+  color: #38765b;
+  font-size: 28px;
+  margin-bottom: 24px;
+}
+
+.action-card h3 {
+  font-family: 'Manrope', sans-serif;
+  font-size: 18px;
+  margin: 0 0 8px;
+}
+
+.action-card p {
+  font-size: 13px;
+  line-height: 1.6;
+  color: #819188;
+  margin: 0;
+}
+
+.arrow {
+  position: absolute;
+  right: 25px;
+  top: 30px;
+  font-size: 20px;
+  color: #91a99a;
+}
+
+.safety-note {
+  margin-top: 40px;
+  padding: 20px 25px;
+  border-left: 3px solid #7dae89;
+  background: #edf5ed;
+  border-radius: 0 12px 12px 0;
+  font-size: 14px;
+}
+
+.safety-note p {
+  margin: 6px 0 0;
+  color: #728878;
+  line-height: 1.6;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  color: #38765b;
+  cursor: pointer;
+  margin-bottom: 30px;
+  padding: 0;
+  font-weight: 600;
+}
+
+.placeholder {
+  padding-top: 30px;
+}
+
+footer {
+  padding: 25px;
+  text-align: center;
+  font-size: 12px;
+  color: #94a49a;
+}
+
+@media (max-width: 760px) {
+  .header {
+    padding: 20px;
+  }
+
+  .main {
+    padding: 55px 20px;
+  }
+
+  .action-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .action-card {
+    min-height: 190px;
+  }
+
+  .portal-badge {
+    font-size: 10px;
+  }
+}
+
+.brand {
+  cursor: pointer;
+}
+
+.form-page {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.form-page h2 {
+  font-size: clamp(28px, 4vw, 40px);
+}
+
+.registration-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.form-section {
+  background: white;
+  border: 1px solid #e3ebe3;
+  border-radius: 18px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.step-label {
+  color: #679475;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
+.form-section h3 {
+  font-family: 'Manrope', sans-serif;
+  font-size: 22px;
+  margin: 4px 0 16px;
+}
+
+.form-section label {
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 12px;
+}
+
+.form-section input:not([type="checkbox"]),
+.form-section select,
+.form-section textarea {
+  width: 100%;
+  border: 1px solid #dce6dc;
+  border-radius: 10px;
+  padding: 14px 16px;
+  font: inherit;
+  font-size: 14px;
+  background: #fbfdfb;
+  color: #253d35;
+}
+
+.form-section input:focus,
+.form-section select:focus,
+.form-section textarea:focus {
+  outline: 2px solid #a4cbb0;
+  outline-offset: 2px;
+}
+
+.field-help {
+  font-size: 12px;
+  color: #829388;
+  margin: -4px 0 8px;
+  line-height: 1.6;
+}
+
+.privacy-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid #e3ebe3;
+  border-radius: 12px;
+}
+
+.privacy-option input {
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  accent-color: #38765b;
+  flex-shrink: 0;
+}
+
+.privacy-option label {
+  margin: 0;
+  cursor: pointer;
+}
+
+.privacy-option span {
+  display: block;
+  color: #819188;
+  font-size: 12px;
+  line-height: 1.7;
+  font-weight: 400;
+  margin-top: 7px;
+}
+
+.privacy-message {
+  background: #edf5ed;
+  padding: 18px;
+  border-radius: 10px;
+  font-size: 13px;
+}
+
+.privacy-message p {
+  color: #728878;
+  line-height: 1.6;
+  margin: 6px 0 0;
+}
+
+.form-error {
+  color: #a43d3d;
+  background: #fff0ee;
+  padding: 14px;
+  border-radius: 10px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.primary-button {
+  background: #285b46;
+  color: white;
+  padding: 15px 26px;
+  border: none;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.primary-button:hover {
+  background: #1c4635;
+}
+
+.cancel-button {
+  background: white;
+  border: 1px solid #dce6dc;
+  color: #60776a;
+  padding: 15px 25px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.success-page {
+  max-width: 570px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.success-icon {
+  width: 70px;
+  height: 70px;
+  background: #e1f1e5;
+  color: #38765b;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 32px;
+  margin: 0 auto 24px;
+}
+
+.confirmation-card {
+  background: white;
+  border: 1px solid #e3ebe3;
+  border-radius: 16px;
+  padding: 30px;
+  margin: 32px 0;
+  text-align: left;
+}
+
+.confirmation-card h3 {
+  font-size: 24px;
+}
+
+.confirmation-card p {
+  font-size: 14px;
+  color: #60776a;
+  line-height: 1.7;
+}
+
+.text-button {
+  display: block;
+  margin: 20px auto;
+  background: none;
+  border: none;
+  color: #38765b;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.demo-label {
+  font-size: 12px;
+  color: #91a299;
+  margin-top: 30px;
+}
+
+@media (max-width: 600px) {
+  .form-section {
+    padding: 22px;
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+  }
+
+  .form-actions button {
+    width: 100%;
+  }
+}
+
+.search-results {
+  background: white;
+  border: 1px solid #e3ebe3;
+  border-radius: 18px;
+  padding: 32px;
+  margin-top: 28px;
+}
+
+.search-results h3 {
+  font-family: 'Manrope', sans-serif;
+  font-size: 23px;
+  margin: 14px 0;
+}
+
+.search-results > p {
+  color: #728878;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.result-icon {
+  width: 55px;
+  height: 55px;
+  background: #eaf4e9;
+  color: #38765b;
+  border-radius: 15px;
+  display: grid;
+  place-items: center;
+  font-size: 30px;
+  margin-top: 22px;
+}
+
+.search-results .privacy-message {
+  margin-top: 24px;
+}
+
+.primary-button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.review-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.review-card {
+  background: white;
+  border: 1px solid #e3ebe3;
+  border-radius: 18px;
+  padding: 28px;
+}
+
+.review-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.review-status {
+  background: #f3f1e7;
+  color: #8b7536;
+  border-radius: 20px;
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.review-card h3 {
+  font-family: 'Manrope', sans-serif;
+  font-size: 20px;
+  line-height: 1.5;
+  margin: 22px 0;
+}
+
+.review-separator {
+  color: #8db79a;
+}
+
+.review-label {
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.review-reasons {
+  padding-left: 20px;
+  color: #60776a;
+  font-size: 14px;
+  line-height: 2;
+  margin-bottom: 22px;
+}
+
+.review-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+
+@media (max-width: 600px) {
+  .review-card {
+    padding: 20px;
+  }
+
+  .review-actions {
+    flex-direction: column;
+  }
+
+  .review-actions button {
+    width: 100%;
+  }
+}
