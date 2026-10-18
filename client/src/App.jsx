@@ -8,6 +8,11 @@ const API_URL =
 
 function App() {
   const [activePage, setActivePage] = useState("home");
+  const isEvaluation = import.meta.env.PROD;
+  const [demoScenario, setDemoScenario] = useState("nickname");
+  const [evaluationCaseId, setEvaluationCaseId] = useState(
+    () => localStorage.getItem("speronEvaluationCaseId") || ""
+  );
   const [people, setPeople] = useState([]);
   const [savedPerson, setSavedPerson] = useState(null);
   const [error, setError] = useState("");
@@ -48,6 +53,43 @@ function App() {
 
   async function handleRegistration(event) {
     event.preventDefault();
+    if (isEvaluation) {
+      setIsSaving(true);
+      setError("");
+
+      try {
+        const response = await fetch(`${API_URL}/api/evaluation/register`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ scenario: demoScenario }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Registration failed.");
+        }
+
+        localStorage.setItem("speronEvaluationCaseId", data.person.id);
+        setEvaluationCaseId(data.person.id);
+        setSavedPerson(data.person);
+        setPeople((previous) => [...previous, data.person]);
+        setSearchName(
+          demoScenario === "nickname"
+            ? "Mike Johnson"
+            : demoScenario === "spelling"
+              ? "Katherine Morgan"
+              : "Alex Carter"
+        );
+        setActivePage("success");
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setIsSaving(false);
+      }
+
+      return;
+    }
 
     if (isSaving) return;
 
@@ -92,6 +134,38 @@ function App() {
 
   async function handleSearch(event) {
     event.preventDefault();
+    if (isEvaluation) {
+      if (!evaluationCaseId) {
+        setError("Register a fictional person first.");
+        return;
+      }
+
+      setIsSearching(true);
+      setError("");
+      setSearchResult(null);
+
+      try {
+        const response = await fetch(`${API_URL}/api/evaluation/search`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ caseId: evaluationCaseId }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Search failed.");
+        }
+
+        setSearchResult(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setIsSearching(false);
+      }
+
+      return;
+    }
 
     if (isSearching) return;
 
@@ -165,8 +239,6 @@ function App() {
                 <p>Explore Speron with fictional scenarios.</p>
                 <span className="arrow">↗</span>
               </button>
-              {!import.meta.env.PROD && (
-                <>
               <button
                 className="action-card"
                 onClick={openRegistration}
@@ -198,8 +270,6 @@ function App() {
                 </p>
                 <span className="arrow">↗</span>
               </button>
-                </>
-              )}
             </div>
 
             <div className="safety-note">
@@ -229,6 +299,28 @@ function App() {
               It's okay if some details are missing.
               No phone or identification is needed.
             </p>
+
+            {isEvaluation && (
+              <div className="privacy-message">
+                <strong>Evaluation Mode — Fictional Records Only</strong>
+                <p>
+                  Choose a fictional person below. The registration will be
+                  saved to the evaluation database. Other form details are
+                  illustrative and will not be submitted.
+                </p>
+
+                <label htmlFor="demo-person">Choose a person</label>
+                <select
+                  id="demo-person"
+                  value={demoScenario}
+                  onChange={(e) => setDemoScenario(e.target.value)}
+                >
+                  <option value="nickname">Michael Johnson — Northside Shelter</option>
+                  <option value="spelling">Catherine Morgan — Riverside Shelter</option>
+                  <option value="privacy">Privacy-protected person</option>
+                </select>
+              </div>
+            )}
 
             <form
               className="registration-form"
@@ -531,11 +623,15 @@ function App() {
         )}
 
         {activePage === "matches" && (
-          <MatchReview onBack={goHome} />
+          <MatchReview
+            onBack={goHome}
+            evaluationCaseId={evaluationCaseId}
+          />
         )}
         {activePage === "demo" && (
           <Demo onBack={goHome} />
         )}
+
 
       </main>
 

@@ -4,7 +4,9 @@ import { useEffect, useState } from "react";
 const API_URL =
   import.meta.env.VITE_API_URL || "http://localhost:3001";
 
-export default function MatchReview({ onBack }) {
+const isEvaluation = import.meta.env.PROD;
+
+export default function MatchReview({ onBack, evaluationCaseId }) {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -15,13 +17,36 @@ export default function MatchReview({ onBack }) {
     setError("");
 
     try {
-      const response = await fetch(`${API_URL}/api/staff/review`);
+      if (isEvaluation && !evaluationCaseId) {
+        setRequests([]);
+        return;
+      }
+
+      const url = isEvaluation
+        ? `${API_URL}/api/evaluation/review/${evaluationCaseId}`
+        : `${API_URL}/api/staff/review`;
+
+      const response = await fetch(url);
+
       if (!response.ok) {
-        throw new Error("Unable to load review queue");
+        throw new Error("Unable to load review queue.");
       }
 
       const data = await response.json();
-      setRequests(data.requests);
+
+      if (isEvaluation) {
+        setRequests([{
+          requestId: data.requestId,
+          searchedName: data.searchedName,
+          candidateName: data.candidateName,
+          score: data.score,
+          matchId: data.canReview ? data.requestId : null,
+          matchStatus: data.status,
+          requestStatus: data.status,
+        }]);
+      } else {
+        setRequests(data.requests || []);
+      }
     } catch (err) {
       setError(err.message);
     } finally {
@@ -31,7 +56,7 @@ export default function MatchReview({ onBack }) {
 
   useEffect(() => {
     loadReviews();
-  }, []);
+  }, [evaluationCaseId]);
 
   async function updateStatus(id, status) {
     if (!id || updatingId) return;
@@ -40,19 +65,20 @@ export default function MatchReview({ onBack }) {
     setError("");
 
     try {
-      const response = await fetch(
-        `${API_URL}/api/staff/matches/${id}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ status }),
-        }
-      );
+      const url = isEvaluation
+        ? `${API_URL}/api/evaluation/review/${id}`
+        : `${API_URL}/api/staff/matches/${id}`;
+
+      const response = await fetch(url, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status }),
+      });
 
       if (!response.ok) {
-        throw new Error("Could not update review");
+        throw new Error("Could not update review.");
       }
 
       await loadReviews();
@@ -69,13 +95,28 @@ export default function MatchReview({ onBack }) {
         ← Back to home
       </button>
 
-      <p className="eyebrow">STAFF REVIEW — LOCAL DEMO</p>
+      <p className="eyebrow">
+        {isEvaluation
+          ? "EVALUATION MODE — FICTIONAL CASE"
+          : "STAFF REVIEW — LOCAL PROTOTYPE"}
+      </p>
+
       <h2>Review possible connections.</h2>
 
       <p className="subtitle">
-        Review requests from the demo database.
+        Review potential family connections.
         Name similarity is not proof of identity.
       </p>
+
+      {isEvaluation && !evaluationCaseId && (
+        <div className="privacy-message">
+          <strong>No active case</strong>
+          <p>
+            First register a fictional person, then create
+            a search request to see the review process.
+          </p>
+        </div>
+      )}
 
       {loading && <p>Loading review requests...</p>}
 
@@ -85,12 +126,10 @@ export default function MatchReview({ onBack }) {
         </p>
       )}
 
-      {!loading && requests.length === 0 && (
+      {!loading && requests.length === 0 && !error && (
         <div className="search-results">
           <h3>No requests yet</h3>
-          <p>
-            Create a search request to see it here.
-          </p>
+          <p>Create a search request to get started.</p>
         </div>
       )}
 
@@ -106,13 +145,14 @@ export default function MatchReview({ onBack }) {
               </span>
 
               <span className="review-status">
-                {(item.matchStatus || item.requestStatus)
+                {(item.matchStatus || item.requestStatus || "pending")
                   .replaceAll("_", " ")}
               </span>
             </div>
 
             <h3>
               {item.searchedName}
+
               {item.candidateName && (
                 <>
                   <span className="review-separator"> ↔ </span>
@@ -130,10 +170,9 @@ export default function MatchReview({ onBack }) {
                 <div className="privacy-message">
                   <strong>Verification required</strong>
                   <p>
-                    This is a possible name connection only.
-                    No identity, location, or contact information
-                    may be disclosed without independent
-                    verification and explicit consent.
+                    This is only a possible connection.
+                    Identity and consent must be verified
+                    before any contact or location is shared.
                   </p>
                 </div>
 
@@ -142,10 +181,7 @@ export default function MatchReview({ onBack }) {
                     className="cancel-button"
                     disabled={updatingId !== null}
                     onClick={() =>
-                      updateStatus(
-                        item.matchId,
-                        "needs_verification"
-                      )
+                      updateStatus(item.matchId, "needs_verification")
                     }
                   >
                     Needs verification
@@ -164,8 +200,11 @@ export default function MatchReview({ onBack }) {
               </>
             ) : (
               <p>
-                No eligible candidate is currently
-                available for review.
+                {item.matchStatus === "registered"
+                  ? "Create a search request to continue."
+                  : item.matchStatus === "privacy_protected"
+                    ? "Matching is unavailable because consent was not given."
+                    : "No eligible candidate is available for review."}
               </p>
             )}
           </article>
@@ -173,8 +212,9 @@ export default function MatchReview({ onBack }) {
       </div>
 
       <p className="demo-label">
-        Local development demo using fictional records.
-        Staff authentication is not yet implemented.
+        {isEvaluation
+          ? "Public evaluation environment · Fictional cases only."
+          : "Local prototype · Staff authentication not implemented."}
       </p>
     </section>
   );

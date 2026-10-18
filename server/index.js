@@ -8,6 +8,7 @@ import {
   findCandidates
 } from "./candidateSearch.js";
 import { compareNames } from "./matching.js";
+import evaluationRouter from "./evaluation.js";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -369,6 +370,7 @@ app.post("/api/demo/match", (req, res) => {
   }
 });
 
+app.use("/api/evaluation", evaluationRouter);
 
 app.listen(PORT, () => {
   console.log(`Speron API running on http://localhost:${PORT}`);
