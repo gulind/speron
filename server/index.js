@@ -132,7 +132,7 @@ app.post("/api/people", (req, res) => {
 });
 
 app.post("/api/search-requests", (req, res) => {
-  const { name } = req.body || {};
+  const { name, ageGroup = "" } = req.body || {};
 
   if (
     typeof name !== "string" ||
@@ -144,11 +144,18 @@ app.post("/api/search-requests", (req, res) => {
     });
   }
 
+  const validAgeGroups = ["", "0-12", "13-17", "18-35", "36-64", "65+"];
+  if (typeof ageGroup !== "string" || !validAgeGroups.includes(ageGroup)) {
+    return res.status(400).json({ error: "Invalid age group." });
+  }
+
   const requestId = randomUUID();
   const createdAt = new Date().toISOString();
 
   try {
-    const candidates = findCandidates(name);
+    const candidates = findCandidates(name).filter(
+      (person) => !ageGroup || !person.age_group || person.age_group === ageGroup
+    );
 
     const matches = candidates
       .map((person) => ({

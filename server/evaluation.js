@@ -11,19 +11,22 @@ const fictionalPeople = {
     name: "Michael Johnson",
     searchedName: "Mike Johnson",
     shelter: "Northside Shelter",
-    allowMatching: true
+    allowMatching: true,
+    ageGroup: "36-64"
   },
   spelling: {
     name: "Catherine Morgan",
     searchedName: "Katherine Morgan",
     shelter: "Riverside Shelter",
-    allowMatching: true
+    allowMatching: true,
+    ageGroup: "18-35"
   },
   privacy: {
     name: "Alexander Carter",
     searchedName: "Alex Carter",
     shelter: "Undisclosed",
-    allowMatching: false
+    allowMatching: false,
+    ageGroup: "18-35"
   }
 };
 
@@ -35,6 +38,12 @@ db.exec(`
     created_at TEXT NOT NULL
   );
 `);
+
+// Existing evaluation databases were created before age filtering.
+if (!db.prepare("PRAGMA table_info(evaluation_cases)").all()
+  .some((column) => column.name === "searched_age_group")) {
+  db.exec("ALTER TABLE evaluation_cases ADD COLUMN searched_age_group TEXT NOT NULL DEFAULT ''");
+}
 
 router.post("/register", (req, res) => {
   const { scenario } = req.body || {};
@@ -64,13 +73,18 @@ router.post("/register", (req, res) => {
       shelter: person.allowMatching
         ? person.shelter
         : "Withheld",
-      allowMatching: person.allowMatching
+      allowMatching: person.allowMatching,
+      ageGroup: person.ageGroup
     }
   });
 });
 
 router.post("/search", (req, res) => {
-  const { caseId } = req.body || {};
+  const { caseId, ageGroup = "" } = req.body || {};
+  const validAgeGroups = ["", "0-12", "13-17", "18-35", "36-64", "65+"];
+  if (typeof ageGroup !== "string" || !validAgeGroups.includes(ageGroup)) {
+    return res.status(400).json({ error: "Invalid age group." });
+  }
 
   if (typeof caseId !== "string") {
     return res.status(400).json({ error: "Invalid case ID." });
@@ -88,9 +102,11 @@ router.post("/search", (req, res) => {
 
   const person = fictionalPeople[record.scenario];
 
-  let status = "privacy_protected";
+  let status = person.allowMatching ? "no_suggestion" : "privacy_protected";
 
-  if (person.allowMatching) {
+  const ageCompatible = !ageGroup || !person.ageGroup || ageGroup === person.ageGroup;
+
+  if (person.allowMatching && ageCompatible) {
     const comparison = compareNames(
       person.searchedName,
       person.name
@@ -102,8 +118,8 @@ router.post("/search", (req, res) => {
   }
 
   db.prepare(`
-    UPDATE evaluation_cases SET status = ? WHERE id = ?
-  `).run(status, caseId);
+    UPDATE evaluation_cases SET status = ?, searched_age_group = ? WHERE id = ?
+  `).run(status, ageGroup, caseId);
 
   res.json({
     requestId: caseId,
@@ -139,6 +155,8 @@ router.get("/review/:caseId", (req, res) => {
     candidateName: canReview ? person.name : null,
     score: canReview ? comparison.score : null,
     status: record.status,
+    ageGroup: person.ageGroup,
+    searchedAgeGroup: record.searched_age_group || "",
     canReview
   });
 });

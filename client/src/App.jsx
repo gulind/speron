@@ -18,6 +18,7 @@ function App() {
   const [error, setError] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [searchName, setSearchName] = useState("");
+  const [searchAgeGroup, setSearchAgeGroup] = useState("");
   const [searchResult, setSearchResult] = useState(null);
   const [isSearching, setIsSearching] = useState(false);
 
@@ -148,7 +149,7 @@ function App() {
         const response = await fetch(`${API_URL}/api/evaluation/search`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ caseId: evaluationCaseId }),
+          body: JSON.stringify({ caseId: evaluationCaseId, ageGroup: searchAgeGroup }),
         });
 
         const data = await response.json();
@@ -186,6 +187,7 @@ function App() {
         },
         body: JSON.stringify({
           name: searchName.trim(),
+          ageGroup: searchAgeGroup,
         }),
       });
 
@@ -559,6 +561,27 @@ function App() {
                 <p className="field-help">
                   Try the name you remember, even if you're
                   unsure about its spelling.
+                </p>
+
+                <label htmlFor="search-age-group">Approximate age (optional)</label>
+                <select
+                  id="search-age-group"
+                  value={searchAgeGroup}
+                  onChange={(event) => {
+                    setSearchAgeGroup(event.target.value);
+                    setSearchResult(null);
+                  }}
+                >
+                  <option value="">Unknown / Any age</option>
+                  <option value="0-12">Child (0–12)</option>
+                  <option value="13-17">Teen (13–17)</option>
+                  <option value="18-35">Adult (18–35)</option>
+                  <option value="36-64">Adult (36–64)</option>
+                  <option value="65+">Older adult (65+)</option>
+                </select>
+                <p className="field-help">
+                  Leave blank if age is unknown. When both age groups are known,
+                  Speron considers only the selected group.
                 </p>
 
                 <button
