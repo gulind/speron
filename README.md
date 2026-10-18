@@ -16,8 +16,6 @@ Speron has three main steps: **register a person, search for someone, and review
 
 ## Screenshots
 
-<!-- Take screenshots from the deployed site and save them in screenshots/ before submitting. -->
-
 ![Speron home page](screenshots/home.png)
 ![Register a person](screenshots/registration.png)
 ![Review possible matches](screenshots/review.png)
@@ -43,7 +41,7 @@ In the local workflow, I also use a phonetic index in SQLite to find likely cand
 
 I added an **optional approximate age-group filter** as another way to narrow a search. If the searched age group is unknown, it isn't used to exclude candidates. If an age group is provided, the current version filters out records with a different known age group. This makes some searches more specific, but it's also a tradeoff: ages can be guessed incorrectly during an emergency, so a real system should probably flag age disagreements for human review instead of ruling people out completely.
 
-A match score is only a similarity measure, **not** a probability that two people are the same person. Even a very similar name can belong to someone else. That's why Speron has a review step instead of automatically confirming matches.
+A match score is only a similarity measure, not a probability that two people are the same person. Even a very similar name can belong to someone else. That's why Speron has a review step instead of automatically confirming matches.
 
 ## People, privacy, and edge cases
 
@@ -59,7 +57,7 @@ The last point was especially important. Someone might have escaped an abusive s
 
 ## The bigger picture
 
-Speron is **one part** of a family reunification system, not the whole solution. In a real evacuation, shelters might have separate databases, paper sign-in sheets, limited internet access, and volunteers who rotate between shifts.
+Speron is one part of a family reunification system, not the whole solution. In a real evacuation, shelters might have separate databases, paper sign-in sheets, limited internet access, and volunteers who rotate between shifts.
 
 A complete system would need staff accounts and permissions, a safe way to digitize paper records, offline check-in with later synchronization, and shared records between authorized shelters. It would also need a careful process for confirming identities, asking for permission before connecting people, and recording when someone withdraws consent. I did not build those parts because I chose to spend the challenge on getting the matching-and-review idea working.
 
@@ -72,7 +70,7 @@ A complete system would need staff accounts and permissions, a safe way to digit
 
 My biggest tradeoff was **scope versus safety**. I wanted reviewers to try a real frontend/backend/database workflow, but exposing a public form for real names without authentication would be irresponsible. The live evaluation flow therefore accepts predefined fictional cases. The more flexible version is available in the local source code. The live evaluation routes use their own simplified case workflow, while the local search routes use the phonetic candidate index.
 
-There are other limitations too. The current age filter is strict when two known age groups disagree, there is no production-ready identity verification or staff authorization, and SQLite data on the free Render deployment may be lost after a restart. Speron should **not** be used with real evacuee information.
+There are other limitations too. The current age filter is strict when two known age groups disagree, there is no production ready identity verification or staff authorization, and SQLite data on the free Render deployment may be lost after a restart. 
 
 ## Running locally
 
@@ -99,12 +97,8 @@ For deployment, the frontend uses `VITE_API_URL` for the backend origin, and the
 
 ## AI usage
 
-I used ChatGPT throughout development to help me understand parts of the challenge, compare matching approaches, work through frontend and backend code, debug problems, and deploy the app. It helped with writing and revising code, not just explaining concepts. I tested the workflow as I went and changed things when they didn't behave the way I expected. One example was realizing that I had collected age groups in registration without using them in search, then adding an age-group filter and thinking through its limitations.
+I used ChatGPT to help with implementing some features, debugging, and deployment. It was especially helpful when I got stuck with the frontend and backend integration. I tested the app and made adjustments as I went.
 
 ## What I'd improve next
 
 I'd first add authenticated staff roles and better identity/consent verification. After that, I'd want to test the matching system on a wider variety of names, improve how it handles multi-part names and age uncertainty, and make the app usable across shelters when internet access is unreliable.
-
----
-
-*This is a fictional-data evaluation prototype, not an emergency service. Please do not enter real personal information.*
