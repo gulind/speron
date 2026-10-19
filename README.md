@@ -1,5 +1,7 @@
 # Speron
 
+Speron comes from the Latin words spes (hope) and origo (beginning).
+
 *A safer way back to each other.*
 
 **Live app:** https://unique-cascaron-a0bfe8.netlify.app  
@@ -76,6 +78,8 @@ There are other limitations too. The current age filter is strict when two known
 
 Node.js **24+** and npm are required.
 
+Clone the repository and start the backend:
+
 ```bash
 git clone https://github.com/gulind/speron.git
 cd speron/server
@@ -83,7 +87,7 @@ npm ci
 NODE_ENV=development npm start
 ```
 
-In another terminal:
+In another terminal, opened from the directory where you cloned the repository:
 
 ```bash
 cd speron/client
@@ -91,14 +95,20 @@ npm ci
 npm run dev
 ```
 
-Open `http://localhost:5173`. The local API runs on `http://localhost:3001`. Only use fictional data for testing.
+Open http://localhost:5173 in your browser. The local API runs on http://localhost:3001. Only use fictional data for testing.
 
 For deployment, the frontend uses `VITE_API_URL` for the backend origin, and the backend uses `CLIENT_ORIGIN` for the frontend origin.
 
 ## AI usage
 
-I used ChatGPT to help with implementing some features, debugging, and deployment. It was especially helpful when I got stuck with the frontend and backend integration. I tested the app and made adjustments as I went.
+I planned what to do and which systems and algorithms to use. I used ChatGPT to help with implementing some features, debugging, and deployment. It was especially helpful when I got stuck with the frontend and backend integration. I tested the app and made adjustments as I went.
 
 ## What I'd improve next
 
 I'd first add authenticated staff roles and better identity/consent verification. After that, I'd want to test the matching system on a wider variety of names, improve how it handles multi-part names and age uncertainty, and make the app usable across shelters when internet access is unreliable.
+
+### Case Tracking
+
+Right now, each search request gets a unique case ID, but users can't do much with it yet. I'd like to add a way for people to check their case status using that number. Since many people may not have phones, volunteers could also write it down for them.
+
+However, I wouldn't want anyone with a case number to access someone's personal information or location. I'd need to add a secure way to verify who's requesting the information.
